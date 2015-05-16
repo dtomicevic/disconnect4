@@ -1,4 +1,4 @@
-# connect4
+# disconnect4
 
 This is a distributed implementation of the famous game
 [connect4](http://en.wikipedia.org/wiki/Connect_Four) made for the [parallel
