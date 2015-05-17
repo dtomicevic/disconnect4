@@ -31,6 +31,14 @@ void reset(game_t& game)
         game.height[i] = STRIDE * i;
 }
 
+game_t newgame()
+{
+    // creates a new empty game
+    game_t game;
+    reset(game);
+    return game;
+}
+
 void play(game_t& game, size_t col)
 {
     // flip the bit in the current players bitboard corresponding to the first
@@ -43,6 +51,11 @@ void play(game_t& game, size_t col)
 bool playable(const game_t& game)
 {
     return (game.boards[0] | game.boards[1]) ^ FULL;
+}
+
+bool legal(const game_t& game, size_t col)
+{
+    return game.height[col] % STRIDE < HEIGHT;
 }
 
 #endif

@@ -12,7 +12,7 @@ std::vector<game_t> succ(const game_t& game)
     for(int i = 0; i < WIDTH; ++i)
     {
         // don't create a state if the column i is already full
-        if(game.height[i] % STRIDE > HEIGHT - 2)
+        if(!legal(game, i))
             continue;
 
         // TODO refactor play to copy value
