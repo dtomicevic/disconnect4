@@ -3,9 +3,9 @@
 
 #include <chrono>
 
-template <typename T = std::chrono::microseconds, 
+template <typename T = std::chrono::milliseconds, 
           typename C = std::chrono::high_resolution_clock,
-          typename D = double>
+          typename D = int>
 class Stopwatch
 {
 public:

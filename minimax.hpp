@@ -8,7 +8,7 @@
 #include "transition.hpp"
 #include "print.hpp"
 
-float max_value(const game_t& game, int d);
+float max_value(const game_t& game, float a, float b, int d);
 
 
 float utility(const game_t& game)
@@ -24,7 +24,7 @@ bool terminal(const game_t& game)
            !playable(game);
 }
 
-float min_value(const game_t& game, int d) //, int& wins, int& losses)
+float min_value(const game_t& game, float alpha, float beta, int d)
 {
     if(terminal(game))
         return utility(game);
@@ -32,15 +32,20 @@ float min_value(const game_t& game, int d) //, int& wins, int& losses)
     if(d == 0)
         return 0;
 
-    float m = std::numeric_limits<float>::infinity();
+    float m = beta;
 
     for(auto& x : succ(game))
-        m = std::min(m, max_value(x, d - 1));
+    {
+        m = std::min(m, max_value(x, alpha, m, d - 1));
+        
+        if(m <= alpha)
+            return alpha;
+    }
 
     return m;
 }
 
-float max_value(const game_t& game, int d)
+float max_value(const game_t& game, float alpha, float beta, int d)
 {
     if(terminal(game))
         return utility(game);
@@ -48,24 +53,29 @@ float max_value(const game_t& game, int d)
     if(d == 0)
         return 0;
 
-    float m = -std::numeric_limits<float>::infinity();
+    float m = alpha;
 
     for(auto& x : succ(game))
-        m = std::max(m, min_value(x, d - 1));
+    {
+        m = std::max(m, min_value(x, m, beta, d - 1));
+    
+        if(m >= beta)
+            return beta;
+    }
 
     return m;
 }
 
 game_t minimax(const game_t& game, int d)
 {
-    float m = -std::numeric_limits<float>::infinity();
-    game_t best;
+    using lim = std::numeric_limits<float>;
 
-    // int wins = 0, losses = 0, searched = 0;
+    float m = -lim::infinity();
+    game_t best;
 
     for(auto& x : succ(game))
     {
-        auto v = min_value(x, d);
+        auto v = min_value(x, -lim::infinity(), lim::infinity(), d);
 
         if (v > m)
             m = v, best = x; 
