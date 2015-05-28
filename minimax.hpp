@@ -11,10 +11,12 @@
 float max_value(const game_t& game, float a, float b, int d);
 
 
-float utility(const game_t& game)
+float utility(const game_t& game, int d)
 {
-    return haswon(game.boards[0]) ? -1 :
-           haswon(game.boards[1]) ?  1 : 0;
+    auto ut =  (haswon(game.boards[0]) ? -1 :
+                haswon(game.boards[1]) ?  1 : 0);
+
+    return ut * (d + 1);
 }
 
 bool terminal(const game_t& game)
@@ -24,20 +26,25 @@ bool terminal(const game_t& game)
            !playable(game);
 }
 
+float heuristic(const game_t& game)
+{
+    return 0;
+}
+
 float min_value(const game_t& game, float alpha, float beta, int d)
 {
     if(terminal(game))
-        return utility(game);
+        return utility(game, d);
 
     if(d == 0)
-        return 0;
+        return heuristic(game);
 
     float m = beta;
 
     for(auto& x : succ(game))
     {
         m = std::min(m, max_value(x, alpha, m, d - 1));
-        
+
         if(m <= alpha)
             return alpha;
     }
@@ -48,17 +55,17 @@ float min_value(const game_t& game, float alpha, float beta, int d)
 float max_value(const game_t& game, float alpha, float beta, int d)
 {
     if(terminal(game))
-        return utility(game);
+        return utility(game, d);
 
     if(d == 0)
-        return 0;
+        return heuristic(game);
 
     float m = alpha;
 
     for(auto& x : succ(game))
     {
         m = std::max(m, min_value(x, m, beta, d - 1));
-    
+
         if(m >= beta)
             return beta;
     }
@@ -72,10 +79,15 @@ game_t minimax(const game_t& game, int d)
 
     float m = -lim::infinity();
     game_t best;
+    int i = 0;
 
     for(auto& x : succ(game))
     {
-        auto v = min_value(x, -lim::infinity(), lim::infinity(), d);
+        i++;
+
+        auto v = min_value(x, -lim::infinity(), lim::infinity(), d - 1);
+
+        std::cout << "i = " << i << "; v = " << v << std::endl;
 
         if (v > m)
             m = v, best = x; 
