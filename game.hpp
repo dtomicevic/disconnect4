@@ -60,7 +60,8 @@ bool legal(const game_t& game, size_t col)
 
 bitboard_t encode(const game_t& game)
 {
-    return game.boards[game.turn] + game.boards[0] + game.boards[1] + BOTTOM;
+    return game.boards[game.turn] + game.boards[0] +
+        game.boards[1] + BOTTOM_ROW;
 }
 
 #endif

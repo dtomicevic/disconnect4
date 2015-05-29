@@ -1,4 +1,4 @@
-CC=clang++
+CC=mpicxx
 CFLAGS=-c -Wall -O3 -flto -march=native -funroll-loops -ffast-math -std=c++14
 LDFLAGS=
 SOURCES=main.cpp

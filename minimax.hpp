@@ -46,9 +46,6 @@ float utility(const game_t& game, int d, stats_t& stats)
 
 bool terminal(const game_t& game)
 {
-    if(!playable(game))
-        std::cout << game << std::endl;
-
     return haswon(game.boards[0]) ||
            haswon(game.boards[1]) ||
            !playable(game);
@@ -57,7 +54,7 @@ bool terminal(const game_t& game)
 float heuristic(const game_t&, int d, const stats_t& stats)
 {
     return (stats.wins - stats.losses) * (d + 1)
-        / (float)(stats.wins + stats.losses);
+        / (float)(stats.wins + stats.losses + 1);
 }
 
 float min_value(const game_t& game,
@@ -124,25 +121,36 @@ float max_value(const game_t& game,
     return m;
 }
 
-game_t minimax(const game_t& game, int d)
+float minimax_worker(const game_t& game, int d)
+{
+    auto inf = std::numeric_limits<float>::infinity();
+
+    TransTable transtable;
+    stats_t stats;
+
+    return game.turn ?
+        max_value(game, -inf, inf, d, transtable, stats) :
+        min_value(game, -inf, inf, d, transtable, stats);
+}
+
+game_t minimax(const game_t& game, int d, TransTable& transtable)
 {
     using lim = std::numeric_limits<float>;
 
     float m = -lim::infinity();
     game_t best;
-    int i = 0;
+    //int i = 0;
 
-    TransTable transtable;
     stats_t stats;
 
     for(auto& x : succ(game))
     {
-        i++;
+        //i++;
 
         auto v = min_value(x, -lim::infinity(), lim::infinity(),
                            d - 1, transtable, stats);
 
-        std::cout << "i = " << i << "; v = " << v << std::endl;
+        // std::cout << "i = " << i << "; v = " << v << std::endl;
 
         if (v > m)
             m = v, best = x; 

@@ -4,13 +4,23 @@
 #include "ai.hpp"
 #include "print.hpp"
 #include "stopwatch.hpp"
+#include "mpi/mpi.hpp"
 
-int main(void)
+int main(int argc, char **argv)
 {
+    mpi::Context context(&argc, &argv);
+    mpi::World world;
+
+    auto ai = Ai(world, 12);
+
+    if(world.rank > 0)
+    {
+        ai.loop();
+        exit(0);
+    }
+
     auto game = newgame();
     int move;
-
-    auto ai = Ai(13);
 
     while(playable(game))
     {

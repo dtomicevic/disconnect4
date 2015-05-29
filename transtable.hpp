@@ -15,7 +15,7 @@ typedef unsigned char byte;
 
 using namespace mem_literals;
 
-typedef LruCache<bitboard_t, byte, TRANSTABLE_SIZE> BoardCache;
+typedef LruCache<bitboard_t, float, TRANSTABLE_SIZE> BoardCache;
 
 class TransTable : BoardCache
 {

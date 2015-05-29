@@ -24,8 +24,8 @@
 
 typedef uint64_t bitboard_t;
 
-#define BOTTOM 0x0101010101010101LL
-#define TOP (BOTTOM << HEIGHT)
+#define BOTTOM_ROW 0x0101010101010101LL
+#define TOP_ROW (BOTTOM_ROW << HEIGHT)
 
 // bitmask of the full board
 #define FULL 0x0FDFBF7EFDFBFLL
