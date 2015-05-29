@@ -10,7 +10,7 @@ int main(void)
     auto game = newgame();
     int move;
 
-    auto ai = Ai(10);
+    auto ai = Ai(13);
 
     while(playable(game))
     {

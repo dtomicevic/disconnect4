@@ -58,4 +58,9 @@ bool legal(const game_t& game, size_t col)
     return game.height[col] % STRIDE < HEIGHT;
 }
 
+bitboard_t encode(const game_t& game)
+{
+    return game.boards[game.turn] + game.boards[0] + game.boards[1] + BOTTOM;
+}
+
 #endif

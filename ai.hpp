@@ -6,13 +6,13 @@
 class Ai
 {
 public:
-    Ai(int depth = 4) 
+    Ai(int depth = 7)
         : depth(depth) {}
 
     game_t play(const game_t& game);
 
 private:
-    int depth = depth;
+    int depth;
 };
 
 game_t Ai::play(const game_t& game)

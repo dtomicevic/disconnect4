@@ -4,72 +4,123 @@
 #include <limits>
 #include <iostream>
 
+#include <cmath>
 #include "bitboard.hpp"
 #include "transition.hpp"
 #include "print.hpp"
+#include "transtable.hpp"
+#include <cassert>
 
-float max_value(const game_t& game, float a, float b, int d);
+#define LOSS -1
+#define WIN 1
+#define DRAW 0
 
-
-float utility(const game_t& game, int d)
+struct stats_t
 {
-    auto ut =  (haswon(game.boards[0]) ? -1 :
-                haswon(game.boards[1]) ?  1 : 0);
+    int wins = 0;
+    int losses = 0;
+};
 
-    return ut * (d + 1);
+float max_value(const game_t& game,
+                float a,
+                float b,
+                int d,
+                TransTable& transtable,
+                stats_t& stats);
+
+float utility(const game_t& game, int d, stats_t& stats)
+{
+    if(haswon(game.boards[0]))
+    {
+        stats.losses++;
+        return LOSS * (d + 1);
+    }
+    else if (haswon(game.boards[1]))
+    {
+        stats.wins++;
+        return WIN * (d + 1);
+    }
+
+    return DRAW;
 }
 
 bool terminal(const game_t& game)
 {
+    if(!playable(game))
+        std::cout << game << std::endl;
+
     return haswon(game.boards[0]) ||
            haswon(game.boards[1]) ||
            !playable(game);
 }
 
-float heuristic(const game_t& game)
+float heuristic(const game_t&, int d, const stats_t& stats)
 {
-    return 0;
+    return (stats.wins - stats.losses) * (d + 1)
+        / (float)(stats.wins + stats.losses);
 }
 
-float min_value(const game_t& game, float alpha, float beta, int d)
+float min_value(const game_t& game,
+                float alpha,
+                float beta,
+                int d,
+                TransTable& transtable,
+                stats_t& stats)
 {
     if(terminal(game))
-        return utility(game, d);
+        return utility(game, d, stats);
 
     if(d == 0)
-        return heuristic(game);
+        return heuristic(game, d, stats);
+
+    auto encoded = encode(game);
+
+    if(transtable.has(encoded))
+        return transtable[encoded];
 
     float m = beta;
 
     for(auto& x : succ(game))
     {
-        m = std::min(m, max_value(x, alpha, m, d - 1));
+        m = std::min(m, max_value(x, alpha, m, d - 1, transtable, stats));
 
         if(m <= alpha)
             return alpha;
     }
 
+    transtable.put(encoded, m);
     return m;
 }
 
-float max_value(const game_t& game, float alpha, float beta, int d)
+float max_value(const game_t& game,
+                float alpha,
+                float beta,
+                int d,
+                TransTable& transtable,
+                stats_t& stats)
 {
     if(terminal(game))
-        return utility(game, d);
+        return utility(game, d, stats);
 
     if(d == 0)
-        return heuristic(game);
+        return heuristic(game, d, stats);
+
+    auto encoded = encode(game);
+
+    if(transtable.has(encoded))
+        return transtable[encoded];
 
     float m = alpha;
 
     for(auto& x : succ(game))
     {
-        m = std::max(m, min_value(x, m, beta, d - 1));
+        m = std::max(m, min_value(x, m, beta, d - 1, transtable, stats));
 
         if(m >= beta)
             return beta;
     }
 
+    transtable.put(encoded, m);
     return m;
 }
 
@@ -81,11 +132,15 @@ game_t minimax(const game_t& game, int d)
     game_t best;
     int i = 0;
 
+    TransTable transtable;
+    stats_t stats;
+
     for(auto& x : succ(game))
     {
         i++;
 
-        auto v = min_value(x, -lim::infinity(), lim::infinity(), d - 1);
+        auto v = min_value(x, -lim::infinity(), lim::infinity(),
+                           d - 1, transtable, stats);
 
         std::cout << "i = " << i << "; v = " << v << std::endl;
 

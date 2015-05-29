@@ -1,5 +1,5 @@
 CC=clang++
-CFLAGS=-c -Wall -O3 -flto -march=native -funroll-loops -ffast-math -std=c++11
+CFLAGS=-c -Wall -O3 -flto -march=native -funroll-loops -ffast-math -std=c++14
 LDFLAGS=
 SOURCES=main.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
@@ -14,4 +14,4 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm disconnect4 && rm *.o
+	rm -f disconnect4 && rm -f *.o 
