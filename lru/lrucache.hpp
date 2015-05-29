@@ -4,6 +4,8 @@
 #include <map>
 #include <list>
 
+typedef unsigned long long ull;
+
 template <typename K, typename T>
 using list_pair_t = std::list<std::pair<K, T>>;
 
@@ -12,7 +14,7 @@ using list_pair_iterator_t = typename list_pair_t<K, T>::iterator;
 
 template <typename K,
           typename T,
-          size_t mem,
+          ull mem,
           typename lookup_t = std::map<K, list_pair_iterator_t<K, T>>>
 class LruCache
 {
@@ -23,7 +25,7 @@ public:
     auto cend() const;
 
     size_t size() const;
-    size_t max_items() const;
+    ull max_items() const;
 
     bool has(const K& key) const;
 
@@ -36,7 +38,7 @@ private:
     list_pair_t<K, T> items;
     lookup_t lookup;
     
-    size_t max_items_ = mem;
+    ull max_items_ = mem / (2 * sizeof(K) + sizeof(T));
 };
 
 #include "lrucache.inl"
