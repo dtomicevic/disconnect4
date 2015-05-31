@@ -11,7 +11,7 @@ int main(int argc, char **argv)
     mpi::Context context(&argc, &argv);
     mpi::World world;
 
-    auto ai = Ai(world, 12);
+    auto ai = Ai(world, 10);
 
     if(world.rank > 0)
     {
